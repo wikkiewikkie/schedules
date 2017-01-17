@@ -112,3 +112,10 @@ class Team(db.Model):
     def matches(self):
         return self.home_matches + self.away_matches
 
+
+class Tournament(db.Model):
+    __tablename__ = "tournaments"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(128), nullable=False)
+    start_date = db.Column(db.Date, nullable=False)
+    end_date = db.Column(db.Date, nullable=False)
