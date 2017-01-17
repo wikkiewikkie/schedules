@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Schedules{% endblock %}</title>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600,400italic,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="{{ url_for('static', filename='screen.css') }}" media="screen">
+  </head>
+  <body>
+    <div class="container">
+    <nav class="navbar navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="{{ url_for('index') }}">
+            <img src="http://www.sandsoccer.com/sites/default/files/atlantic_bay.png" alt="Atlantic Bay Mortgage" width="75" height="20" style="display:inline">&nbsp;&nbsp;{% block name %}NASSC 2016 Schedules{% endblock %}
+          </a>
+        </div>
+      </div>
+    </nav>
+    {% block body %}{% endblock %}
+    </div>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script src="{{ url_for('static', filename='typeahead.js') }}"></script>
+    <script>
+    var teams = new Bloodhound({
+      datumTokenizer: Bloodhound.tokenizers.whitespace,
+      queryTokenizer: Bloodhound.tokenizers.whitespace,
+      prefetch: '/api/tournaments/1/teams'
+    });
+
+    $('#teamSearchContainer .typeahead').typeahead({
+      hint: true,
+      highlight: true,
+      minLength: 1
+    },
+    {
+      name: 'teams',
+      source: teams,
+      limit: 10
+    });
+    </script>
+  </body>
+</html>

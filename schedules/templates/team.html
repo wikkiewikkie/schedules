@@ -1,0 +1,46 @@
+{% extends "_layout.html" %}
+{% block title %}{{ team.name }} - {{ team.id }}{% endblock %}
+{% block body %}
+<div class="well">
+<h2>{{ team.id }} - <em>{{ team.name }}</em></h2>
+<h4><a href="division?id=<?php echo $divisionId; ?>">Division No. {{ team.div.id }}</a> - {{ team.div.group }} {{ team.div.age }} {{ team.div.level }}</h4>
+<h4>Group {{ team.group }}</h4>
+{% if team.div.updated %}<h4 style="color: rgba(255,0,0,0.86)"><em>The schedule for this division changed on {{ team.div.updated }}</em></h4>{% endif %}
+</div>
+
+<div class="row">
+
+<div class="col-sm-7 col-md-8">
+    <div class="panel panel-info">
+      <div class="panel-heading">
+        <h3 class="panel-title">Group Stage Matches</h3>
+      </div>
+      <div class="panel-body">
+        <ul class="list-group">
+        {% for match in team.matches %}
+        <li class="list-group-item">
+            <strong>{{ match.home_team }} vs. {{ match.away_team }}</strong> <span class="pull-right">{{ match.date }} at {{ match.time }}</span>
+            <br/>
+            <em>Field No. {{ match.field }}</em>
+            </li>
+        {% endfor %}
+        </ul>
+      </div>
+    </div>
+</div>
+
+<div class="col-sm-5 col-md-4">
+    <div class="panel panel-warning">
+      <div class="panel-heading">
+        <h3 class="panel-title">Printable Schedule</h3>
+      </div>
+      <div class="panel-body">
+        <a href="{{ url_for('printable', number=team.div.printable.id) }}" class="btn btn-default btn-block">
+            <span class="glyphicon glyphicon-file"></span><br/>{{ team.div.printable.description }} (PDF)
+        </a>
+      </div>
+    </div>
+</div>
+
+</div>
+{% endblock %}

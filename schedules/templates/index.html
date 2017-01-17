@@ -1,0 +1,78 @@
+{% extends "_layout.html" %}
+{% block body %}
+<div class="row">
+
+    <div class="col-xs-12">
+    <div class="well">
+    <strong>Important Notice:</strong>
+    <p>We make every effort to keep this site updated, but last-minute changes do happen.  Please confirm your
+    schedules using the official copies provided at registration, or by checking at the tent closest to your fields.</p>
+    <p>This year we will be live scoring all divisions. Match results and group standings will be updated on a regular
+    basis throughout the tournament weekend. <em>Please note that these results are unofficial</em>.  Official results
+    and standings are available at the tent nearest your fields.
+	<p>
+	Your feedback is important to us.  If you see something that doesn't quite look right or have some thoughts about how we can improve live scoring, please send us an e-mail at <a href="mailto:scoring@sandsoccer.com">scoring@sandsoccer.com</a>.
+	</p>
+    </div>
+    </div>
+
+</div>
+
+<div class="row">
+
+<div class="col-sm-6">
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><span class="glyphicon glyphicon-search pull-left"></span>Find A Team</h3>
+      </div>
+      <div class="panel-body">
+        <form method="post" action="team">
+          <div class="form-group col-lg-10 col-md-10 col-sm-8" id="teamSearchContainer">
+            <input type="text" class="form-control typeahead" id="teamSearch" name="teamSearch" placeholder="Enter team name or ID" style="width:100%">
+          </div>
+          <div class="col-lg-2 col-md-2 col-sm-4">
+            <input type="submit" class="btn btn-block " value="Go">
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="panel panel-info">
+      <div class="panel-heading">
+        <h3 class="panel-title"><span class="glyphicon glyphicon-th-list pull-left"></span>Browse By Division</h3>
+      </div>
+      <div class="panel-body">
+        <div class="list-group">
+            {% for division in divisions %}
+                <a href="{{ url_for('division', number=division.id) }}" class="list-group-item">
+                    <strong>No. {{ division.id }}</strong> {% if division.scoring %}<small><span style="color: #d50000">&nbsp;Live!</span></small>{% endif %} <span class="pull-right">{{ division.group }} {{ division.age }} {{ division.level }}</span>
+                </a>
+            {% endfor %}
+        </div>
+      </div>
+    </div>
+</div>
+
+<div class="col-sm-6">
+
+    <div class="panel panel-success">
+      <div class="panel-heading">
+        <h3 class="panel-title"><span class="glyphicon glyphicon-print pull-left"></span>Printable Schedules</h3>
+      </div>
+      <div class="panel-body">
+        <div class="list-group">
+            {% for printable in printables %}
+                <a href="{{ url_for('printable', number=printable.id) }}" class="list-group-item">
+                    <span class="glyphicon glyphicon-file"></span>&nbsp;&nbsp;&nbsp;{{ printable.description }}{% if printable.updated() %}<br/><span class="updated"><small><em style="color: rgba(255,0,0,0.86)">Updated {{ printable.updated() }}</em></small></span>{% endif %}
+                </a>
+            {% endfor %}
+        </div>
+      </div>
+    </div>
+
+</div>
+
+
+</div>
+{% endblock %}

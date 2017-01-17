@@ -1,0 +1,137 @@
+{% extends "_layout.html" %}
+{% block title %}Division {{ division.id }} - {{ division.group}} {{ division.age }} {{ division.level }}{% endblock %}
+{% block body %}
+<div class="well">
+<h3>Division {{ division.id }}</h3>
+<h4>{{ division.group}} {{ division.age }} {{ division.level }}</h4>
+{% if division.updated %}<h4 style="color: rgba(255,0,0,0.86)"><em>Schedule changed on {{ division.updated }}</em></h4>{% endif %}
+</div>
+
+{% if division.scoring %}
+
+	<div class="well">
+		<p>
+		Match results and group standings will be updated on a regular basis throughout the tournament weekend.
+		<em>These results are unofficial</em>.  Official results and standings for this division are available at the tent nearest your fields.
+		</p>
+		<p>
+		Your feedback is important to us.  If you see something that doesn't quite look right or have some thoughts about how we can improve live scoring, please send us an e-mail at <a href="mailto:scoring@sandsoccer.com">scoring@sandsoccer.com</a>.
+		</p>
+	</div>
+
+	<div class="panel panel-danger">
+	  <div class="panel-heading">
+	    <h3 class="panel-title">Standings</h3>
+	  </div>
+	  <div class="panel-body">
+	  	<span class="visible-xs">P: Points &bull; G: Goals &bull; A: Goals Against &bull; GD: Goal Differential</span>
+	    <table style="width:100%">
+	        <tbody>
+            {% for group_name, group_teams in division.groups().items() %}
+            <tr style="margin-top:12px">
+                <td colspan="2" style="padding-top:18px">Group {{ group_name }}</td>
+                <th style="vertical-align:bottom">P<span class="hidden-xs">oints</span></th>
+                <th style="vertical-align:bottom">G<span class="hidden-xs">oals</span></th>
+                <th style="vertical-align:bottom">A<span class="hidden-xs">gainst</span></th>
+                <th style="vertical-align:bottom">G<span class="hidden-xs">oal </span>D<span class="hidden-xs">iff</span></th>
+            </tr>
+            {% for team in group_teams %}
+            <tr style="border-bottom: 1px solid rgba(0,0,0,0.25)">
+                <td class="indent"><a href="{{ url_for('team', number=team.id) }}"><strong>{{ team.id }}</strong></a></td>
+                <td><em>{{ team.name }}</em></td>
+                <td>{{ team.points }}</td>
+                <td>{{ team.goals }}</td>
+                <td>{{ team.goals_against }}</td>
+                <td>{{ team.goal_diff }}</td>
+            </tr>
+            {% endfor %}
+            {% endfor %}
+	        </tbody>
+	    </table>
+	  </div>
+	</div>
+	
+{% else %}
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Teams</h3>
+  </div>
+  <div class="panel-body">
+    <div class="list-group">
+    {% for group_name, group_teams in division.groups().items() %}
+    <a class="list-group-item disabled">Group {{group_name}}</a>
+    <?php $currentgroup = $team->grp; } ?>
+    <a class="list-group-item" href="{{ url_for('team', number=team.id) }}">&nbsp;&nbsp;&nbsp;&nbsp;<strong><?php echo $team->id; ?></strong>&nbsp;&nbsp;<em><?php echo $team->name; ?></em><span class="pull-right"></span></a>
+    {% endfor %}
+    </div>
+  </div>
+</div>
+
+{% endif %}
+
+<div class="row">
+
+<div class="col-sm-5 col-md-6">
+    <div class="panel panel-info">
+      <div class="panel-heading">
+        <h3 class="panel-title">Group Stage Matches</h3>
+      </div>
+      <div class="panel-body">
+        <ul class="list-group">
+        {% for match in division.matches %}
+        <li class="list-group-item">
+            <strong>{{ match.home_team }} vs. {{ match.away_team }}</strong> {% if match.home_score %}({{ match.home_score }}-{{ match.away_score }}){% endif %} <span class="pull-right">{{ match.date }} at {{ match.time }}</span>
+            <br/>
+            <a href="field?id=<?php echo $match->field; ?>"><em>Field No. {{ match.field }}</em></a>
+            </li>
+        {% endfor %}
+        </ul>
+      </div>
+    </div>
+</div>
+
+<div class="col-sm-7 col-md-6">
+
+    <div class="panel panel-success">
+      <div class="panel-heading">
+        <h3 class="panel-title">Finals</h3>
+      </div>
+
+      <div class="panel-body">
+        <ul class="list-group">
+        {% for final in division.finals %}
+        <li class="list-group-item">
+            <strong>{{ final.description }}</strong> - {{ final.home }} vs. {{ final.away }}
+            <br/>
+            {% if final.home_actual %}
+            {{ final.home_team.name }} <small>({{ final.home_actual }})</small> v. {{ final.away_team.name }} <small>({{ final.away_actual }})</small>
+            <br />
+            {% endif %}
+			{% if final.home_score %}
+			Score: {{ final.home_score }} - {{ final.away_score }}
+			<br/>
+			{% endif %}
+            {{ final.date }} at {{ final.time }}
+            <br/>
+            <a href="{{ url_for('field', number=final.field) }}"><em>Field {{ final.field }}</em></a>
+            </li>
+        {% endfor %}
+        </ul>
+      </div>
+    </div>
+    
+    <div class="panel panel-warning">
+      <div class="panel-heading">
+        <h3 class="panel-title">Printable Schedule</h3>
+      </div>
+        <a href="{{ url_for('printable', number=division.printable.id) }}" class="btn btn-default btn-block">
+            <span class="glyphicon glyphicon-file"></span><br/>{{ division.printable.description }} (PDF)
+        </a>
+      </div>
+    </div>
+    
+</div>
+
+</div>
+{% endblock %}

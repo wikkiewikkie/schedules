@@ -1,0 +1,92 @@
+<?php 
+$title = "NASSC 2016 Schedules - Field " . $_GET['id'];
+require_once('includes/db_connect.php');
+require_once('includes/head.php');
+
+$fieldId = $_GET['id'];
+
+$fieldQuery ="SELECT * FROM fields WHERE id = :fieldId LIMIT 1";
+$fieldStatement = $sql_link->prepare($fieldQuery);
+$fieldResult = $fieldStatement->execute(array("fieldId"=>$fieldId));
+$field = $fieldStatement->fetch(PDO::FETCH_OBJ);
+
+$matchesQuery ="SELECT DATE_FORMAT(date, '%W') AS datef, DATE_FORMAT(time, '%l:%i %p') AS timef, home, away, field FROM matches WHERE field = :fieldId ORDER BY date, time ";
+$matchesStatement = $sql_link->prepare($matchesQuery);
+$matchesResult = $matchesStatement->execute(array("fieldId"=>$fieldId));
+$matches = $matchesStatement->fetchAll(PDO::FETCH_OBJ);
+
+$finalsQuery ="SELECT DATE_FORMAT(date, '%W') AS datef, DATE_FORMAT(time, '%l:%i %p') AS timef, home, away, field, description, division_id FROM finals WHERE field = :fieldId ORDER BY date, time ";
+$finalsStatement = $sql_link->prepare($finalsQuery);
+$finalsResult = $finalsStatement->execute(array("fieldId"=>$field->id));
+$finals = $finalsStatement->fetchAll(PDO::FETCH_OBJ);
+
+$divsQuery ="SELECT divisions.* FROM matches, divisions WHERE field = :fieldId AND divisions.id = division_id GROUP BY division_id ORDER BY divisions.id";
+$divsStatement = $sql_link->prepare($divsQuery);
+$divsResult = $divsStatement->execute(array("fieldId"=>$field->id));
+$divs = $divsStatement->fetchAll(PDO::FETCH_OBJ);
+
+?>
+<div class="well">
+<h3>Field No. <?php echo $field->id; ?></h3>
+<h4>Located at <?php echo $field->location; ?></h4>
+<h4>Need Help? Visit Tent <?php echo $field->tent; ?></h4>
+<?php if ($div->dateu) { ?><h4 style="color: rgba(255,0,0,0.86)"><em>Changed on <?php echo $div->dateu; ?></em></h4><?php } ?>
+</div>
+
+<div class="row">
+
+<div class="col-sm-5 col-md-6">
+    <div class="panel panel-info">
+      <div class="panel-heading">
+        <h3 class="panel-title">Group Stage Matches</h3>
+      </div>
+      <div class="panel-body">
+        <ul class="list-group">
+        <?php foreach ($matches as $match) { ?>
+        <li class="list-group-item">
+            <strong><?php echo $match->home; ?> vs. <?php echo $match->away; ?></strong>
+            <br/>
+            <?php echo $match->datef; ?> at <?php echo $match->timef; ?>
+            </li>
+        <?php } ?>
+        </ul>
+      </div>
+    </div>
+</div>
+
+<div class="col-sm-7 col-md-6">
+    <div class="panel panel-success">
+      <div class="panel-heading">
+        <h3 class="panel-title">Finals</h3>
+      </div>
+      <div class="panel-body">
+        <ul class="list-group">
+        <?php foreach ($finals as $final) { ?>
+        <li class="list-group-item">
+            <strong>Division <?php echo $final->division_id; ?> <?php echo $final->description; ?></strong> - <?php echo $final->home; ?> vs. <?php echo $final->away; ?>
+            <br/>
+            <?php echo $final->datef; ?> at <?php echo $final->timef; ?>
+            </li>
+        <?php } ?>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Related Divisions</h3>
+      </div>
+      <div class="panel-body">
+        <div class="list-group">
+        <?php foreach ($divs as $div) { ?>
+        <a class="list-group-item" href="division?id=<?php echo $div->id; ?>"><strong><?php echo $div->id; ?></strong><span class="pull-right"><em><?php echo $div->group; ?> <?php echo $div->level; ?> <?php echo $div->age; ?></em></span></a>
+        <?php } ?>
+        </div>
+      </div>
+    </div>
+    
+</div>
+
+</div>
+
+<?php require_once('includes/tail.php'); ?>
